@@ -106,6 +106,12 @@ framing, her actual room behind her — rather than like a photoshoot she
 remembered to have. Four situations rather than four outfits, because the same
 pose in a different shirt still reads as one afternoon.
 
+The first two are universal, the last two are hers: shot 3 is the place she
+actually spends her days and shot 4 is her own city at night, both taken from
+`activity` and `evening` in the casting sheet. The first pass made all four
+generic and the twelve sets came back interchangeable — the same denim jacket
+in the same park, twelve times. One photoshoot, one level up.
+
 ```sh
 KIE_API_KEY=... node scripts/selfies.mjs            # everyone
 KIE_API_KEY=... node scripts/selfies.mjs mia --force

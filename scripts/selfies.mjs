@@ -41,27 +41,75 @@ const SAME_WOMAN = `Keep the exact same woman from the reference photograph — 
 const PHONE = `Shot on her own phone's front camera at arm's length: her arm visible reaching toward the lens, framing slightly off-centre and tilted, mild wide-angle distortion, focus not quite perfect. Slightly soft and noisy the way a phone is in low light. Not a professional portrait, no studio lighting, nothing styled. Single subject, no text, no watermark, vertical.`;
 
 /**
+ * The two universal shots still need twelve different outfits. The first pass
+ * hard-coded "an oversized t-shirt" and "a fitted top and jeans" and produced
+ * nine women in the same black top — and these are slots 1 and 2, the ones
+ * every user is served first, so they are the worst place in the bank to
+ * repeat yourself. Rotated by roster position rather than at random, so a
+ * re-run reproduces the same set.
+ */
+const INDOORS = [
+  'an oversized faded band t-shirt',
+  'a worn grey hoodie with the sleeves pushed up',
+  'a soft cropped sweatshirt and pyjama shorts',
+  'an old linen shirt, half the buttons undone over a vest',
+  'a striped long-sleeved top that is too big for her',
+  'a plain white tank top and flannel pyjama bottoms',
+];
+
+const GOING_OUT = [
+  'a fitted black top and straight blue jeans',
+  'a cream knit jumper tucked into wide trousers',
+  'a leather jacket over a plain tee and black jeans',
+  'a short floral dress and boots',
+  'an oversized blazer over a vest and jeans',
+  'a ribbed polo neck and a long skirt',
+];
+
+/** Deterministic per companion: her position in the roster picks the outfit. */
+const pick = (list, c) => list[COMPANIONS.indexOf(c) % list.length];
+
+/**
+ * The location clause of a casting-sheet line — everything before the first
+ * comma. `activity` and `evening` are written for a photographer ("painting at
+ * an easel by a tall window, brush in hand, half turned toward the camera"),
+ * and the tail contradicts a selfie, where she is holding the phone and
+ * looking into it. The head of the line is the part worth keeping.
+ */
+const where = (line) => line.split(',')[0].trim();
+
+/**
  * Four situations rather than four outfits: a bank of the same pose in
- * different shirts still reads as one afternoon. Deliberately generic, so
- * every companion can wear them — the character is carried by the reference
- * face and by whatever she has on underneath.
+ * different shirts still reads as one afternoon.
+ *
+ * The first two are deliberately universal — everyone's camera roll has a tired
+ * one on the bed and a mirror one before going out. The last two are hers: the
+ * first pass made all twelve generic, and twelve women in the same denim jacket
+ * in the same park is the same "one photoshoot" failure one level up, visible
+ * the moment you put the sets side by side.
  */
 export const SELFIES = [
   {
     name: 'chat-01',
-    prompt: `${SAME_WOMAN} A selfie taken in her bedroom late in the evening, sitting on the edge of an unmade bed, one lamp on, her own things visible behind her — clothes on a chair, a half-open wardrobe. She is wearing an oversized soft t-shirt, hair loose and a little undone. Small tired smile, looking straight into the lens. ${PHONE}`,
+    prompt: c =>
+      `${SAME_WOMAN} A selfie taken in her bedroom late in the evening, sitting on the edge of an unmade bed, one lamp on, her own things visible behind her — clothes on a chair, a half-open wardrobe. She is wearing ${pick(INDOORS, c)}, hair loose and a little undone. Small tired smile, looking straight into the lens. ${PHONE}`,
   },
   {
     name: 'chat-02',
-    prompt: `${SAME_WOMAN} A full-length mirror selfie in her hallway before going out, phone visible in her hand covering part of her face, other hand at her side. Coats on hooks and a light switch behind her. She is wearing a fitted top and jeans, hair done. Confident, chin slightly down. Warm indoor light. ${PHONE}`,
+    prompt: c =>
+      `${SAME_WOMAN} A full-length mirror selfie in her hallway before going out, phone visible in her hand covering part of her face, other hand at her side. Coats on hooks and a light switch behind her. She is wearing ${pick(GOING_OUT, c)}, hair done. Confident, chin slightly down. Warm indoor light. ${PHONE}`,
   },
   {
     name: 'chat-03',
-    prompt: `${SAME_WOMAN} A selfie outdoors in bright daylight, held high above her, squinting slightly into the sun and laughing, hair moving. A street or park thrown out of focus behind her. She is wearing a light jacket over a plain top. Overexposed highlights, the way a phone handles the sun badly. ${PHONE}`,
+    /** Mid-thing, in the place she actually spends her days. */
+    prompt: c =>
+      `${SAME_WOMAN} A selfie she took in the middle of what she was doing — ${where(c.activity)} — turning to the camera for a second, a little pleased with herself. Her real surroundings are visible and untidy. Daylight from a window. She is wearing ordinary clothes for the task, fully dressed. ${PHONE}`,
   },
   {
     name: 'chat-04',
-    prompt: `${SAME_WOMAN} A selfie in the middle of getting ready, taken in a small bathroom, warm light overhead, tiles and a mirror edge visible. Hair half-done, one hand still holding it up, an amused eyebrow raised at the camera. She is wearing a robe or a towel over her shoulders, covered up, nothing revealing. ${PHONE}`,
+    /** Out in her own city at night, which is where she stops being a stock photo. */
+    prompt: c =>
+      `${SAME_WOMAN} A selfie she took at night ${where(c.evening)}, holding the phone up and looking into it, the place behind her out of focus and lit by whatever light is actually there. She is dressed for being out, coat or jacket on. Grainy and imperfect the way a phone is at night. ${PHONE}`,
   },
 ];
 
@@ -96,7 +144,7 @@ const run = async () => {
       }
       const started = Date.now();
       try {
-        const url = await generate(shot.prompt, '3:4', [AVATAR(c.id)], s =>
+        const url = await generate(shot.prompt(c), '3:4', [AVATAR(c.id)], s =>
           log(c.id, shot.name, `still queued after ${s}s`),
         );
         await download(url, path);
