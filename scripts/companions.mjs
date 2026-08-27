@@ -18,6 +18,10 @@
  *    nose stud, a fringe cut slightly wrong. Twelve conventionally pretty
  *    faces with no marks read as stock photography, which is the exact
  *    opposite of what this app is selling.
+ *  - **Never take those features off in `wardrobe`.** Ava's selfie originally
+ *    said "glasses off, hair down" and came back as a different woman: the
+ *    edit had nothing left to hold on to. An outfit may change everything
+ *    except what makes her recognisable.
  *
  * `activity` completes "candid photograph of her …" for the casual shot, and
  * `evening` completes "…" for the moment shot. Both are in her own world:
@@ -90,7 +94,7 @@ export const COMPANIONS = [
     anchor: 'a charcoal turtleneck',
     out: 'a long black coat over a white shirt',
     casual: 'a worn MIT sweatshirt, sleeves pushed up',
-    selfie: 'a stretched-out grey tank top, glasses off, hair down',
+    selfie: 'a stretched-out grey tank top, hair down, still wearing her glasses',
     evening: 'a burgundy silk blouse',
     },
     grade: 'cool desaturated colour grade, blue-grey shadows and amber highlights',
