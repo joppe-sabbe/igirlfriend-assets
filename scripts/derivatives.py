@@ -33,6 +33,12 @@ SHOTS = {
     "03-casual": ("casual", 864, 432),
     "04-selfie": ("selfie", 864, 432),
     "05-evening": ("evening", 864, 432),
+    # The chat bank — see scripts/selfies.mjs. No thumbnail: these are only
+    # ever drawn at one size, a 216pt bubble, and never as a tile.
+    "chat-01": ("chat-1", 864, None),
+    "chat-02": ("chat-2", 864, None),
+    "chat-03": ("chat-3", 864, None),
+    "chat-04": ("chat-4", 864, None),
 }
 
 FULL_Q = 82

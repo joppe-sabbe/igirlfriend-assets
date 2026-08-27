@@ -20,6 +20,7 @@ companions/<id>/01-anchor.png    1:1   the reference face — and the avatar
                 03-casual.png    3:4   candid, doing the thing she actually does
                 04-selfie.png    3:4   what she "sends" in a chat
                 05-evening.png   3:4   Moments feed
+                chat-01..04.png  3:4   the bank she sends from in a chat
 ```
 
 `web/` is what the phone downloads: 98 MB of PNG compressed to 7.5 MB of
@@ -32,6 +33,7 @@ web/<id>/avatar.jpg      512x512    every circular avatar in the app
          casual.jpg      864x1184   and casual-sm.jpg
          selfie.jpg      864x1184   and selfie-sm.jpg
          evening.jpg     864x1184   and evening-sm.jpg
+         chat-1..4.jpg   864x1184   the chat bank, one size only
 ```
 
 Served at:
@@ -94,6 +96,25 @@ says in as many words that this is a new photograph taken on a different day.
 
 Transient `failCode 500 / Internal Error` is common and costs no credits;
 whole jobs retry three times.
+
+## The chat bank
+
+`scripts/selfies.mjs` makes the four she sends when the user asks for a photo.
+Different job from the five above: those are the app's furniture, these are
+messages, so they have to look like a phone in her own hand — visible arm, bad
+framing, her actual room behind her — rather than like a photoshoot she
+remembered to have. Four situations rather than four outfits, because the same
+pose in a different shirt still reads as one afternoon.
+
+```sh
+KIE_API_KEY=... node scripts/selfies.mjs            # everyone
+KIE_API_KEY=... node scripts/selfies.mjs mia --force
+```
+
+The reference is `web/<id>/avatar.jpg`, not a freshly generated anchor: it is
+public and permanent now, so this script needs no cached URLs and will get the
+same face a year from now. The app spends the four one at a time and then
+generates its own — `src/services/photos.ts`.
 
 ## Editing a character's look
 
