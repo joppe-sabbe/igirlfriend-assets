@@ -11,12 +11,11 @@ The app currently draws every companion as a vector gradient bust
 ## Layout
 
 ```
-companions/<id>/01-anchor.png    1:1   the reference face — every other shot is an edit of it
+companions/<id>/01-anchor.png    1:1   the reference face — and the avatar
                 02-card.png      3:4   Discover card
-                03-avatar.png    1:1   chat header, message list, small circles
-                04-casual.png    3:4   candid, doing the thing she actually does
-                05-selfie.png    3:4   what she "sends" in a chat
-                06-evening.png   3:4   Moments feed
+                03-casual.png    3:4   candid, doing the thing she actually does
+                04-selfie.png    3:4   what she "sends" in a chat
+                05-evening.png   3:4   Moments feed
 ```
 
 ## Generating
@@ -39,8 +38,19 @@ run can generate shot 04 without redoing the face it has to match.
 Only `01-anchor` is generated from text. Everything else is a
 `google/nano-banana-edit` job against the anchor's URL, carrying an explicit
 "same woman, do not change her identity" instruction. Six independent
-portraits from one description give you six different women — near enough to
-each other to read as a bug rather than a character.
+portraits from one description give you several different women — near enough
+to each other to read as a bug rather than a character.
+
+There is no separate avatar file. The anchor is already a square
+head-and-shoulders portrait on a plain background, which is what a small
+circular avatar wants; asking the model for "a tighter crop of this" returned
+the anchor again at the price of a job. The app crops it.
+
+**Clothing lives in `wardrobe`, never in `look`.** An edit inherits whatever
+the reference was wearing, so the first pass put the same linen shirt on the
+street, at the easel and on a rooftop at midnight — one photoshoot rather than
+a person with a life. Each shot now names its own outfit, and the edit prompt
+says in as many words that this is a new photograph taken on a different day.
 
 ## Two rules the API enforces the hard way
 
