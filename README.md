@@ -5,10 +5,14 @@ pipeline that produces them. Kept out of the app repo because image sets churn
 — a face gets rejected, regenerated, recropped — and none of that belongs in
 the history of the application.
 
-The app currently draws every companion as a vector gradient bust
-(`src/components/Avatar.tsx`). These replace it.
+**This repository is also the app's image server.** Nothing here ships inside
+the IPA; the app fetches `web/` over HTTPS from GitHub Pages, which is why the
+repository is public. Replacing a face is a push, not a release.
 
 ## Layout
+
+`companions/` holds the masters — the negatives. Every crop and re-encode comes
+from these, never from a JPEG.
 
 ```
 companions/<id>/01-anchor.png    1:1   the reference face — and the avatar
@@ -16,6 +20,32 @@ companions/<id>/01-anchor.png    1:1   the reference face — and the avatar
                 03-casual.png    3:4   candid, doing the thing she actually does
                 04-selfie.png    3:4   what she "sends" in a chat
                 05-evening.png   3:4   Moments feed
+```
+
+`web/` is what the phone downloads: 98 MB of PNG compressed to 7.5 MB of
+progressive JPEG by `scripts/derivatives.py`, in two widths because the same
+photograph is a full-bleed hero and a 118pt gallery tile.
+
+```
+web/<id>/avatar.jpg      512x512    every circular avatar in the app
+         card.jpg        864x1184   and card-sm.jpg at 432x592
+         casual.jpg      864x1184   and casual-sm.jpg
+         selfie.jpg      864x1184   and selfie-sm.jpg
+         evening.jpg     864x1184   and evening-sm.jpg
+```
+
+Served at:
+
+```
+https://joppe-sabbe.github.io/igirlfriend-assets/web/<id>/<shot>.jpg
+```
+
+The app builds those URLs in `src/data/media.ts` and picks the width from the
+box it is drawing into. Change the layout here and that file changes with it.
+
+```sh
+python3 scripts/derivatives.py            # after adding or replacing a master
+python3 scripts/derivatives.py --force    # re-encode everything
 ```
 
 ## Generating
