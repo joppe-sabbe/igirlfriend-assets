@@ -36,6 +36,21 @@ web/<id>/avatar.jpg      512x512    every circular avatar in the app
          chat-1..4.jpg   864x1184   the chat bank, one size only
 ```
 
+`gifts/` is the second set: the eight objects in the gift catalogue, cut out
+of their green screen so they can sit on the chat's near-black background with
+no card behind them.
+
+```
+gifts/<id>-raw.png               1:1   what the model returned, green screen
+      <id>.png                   1:1   the master, keyed and trimmed to the object
+web/gifts/<id>.png               512   chat card and gift sheet detail
+          <id>-sm.png            192   the tiles in the gift sheet
+```
+
+Made by `scripts/gifts.mjs` (generate) and `scripts/cutout.py` (key). Ids match
+`src/data/gifts.ts` in the app; a gift with no file falls back to its vector
+glyph, so the app never waits on this repository.
+
 Served at:
 
 ```
